@@ -18,7 +18,7 @@ ENV RUST_BACKTRACE=full
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# RUN mkdir -p $NEXUS_HOME
+RUN mkdir -p /wallet
 
 WORKDIR /app
 

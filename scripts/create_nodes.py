@@ -54,7 +54,7 @@ def create_wallets(num_wallets):
   n{i:03d}:
     image: toanbk/nexus-prover:latest
     volumes:
-      - ${{WALLET_DIR}}/{wallet_filename}:/root/.nexus
+      - ${{WALLET_DIR}}/{wallet_filename}:/wallet
     ulimits:
       nofile:
         soft: 65535
