@@ -20,10 +20,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN mkdir -p $NEXUS_HOME
 
-WORKDIR /root/.nexus
+WORKDIR /app
 
 COPY ./bin/src ./src
-COPY ./bin/prover .
+COPY ./bin/prover ./
+
 RUN chmod +x ./prover
 
 # Copy the entrypoint script

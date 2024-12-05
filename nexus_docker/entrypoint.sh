@@ -6,7 +6,5 @@
 
 echo "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
 
-ls -l /root/.nexus
-
 # Run the prover binary with the endpoint URL
-/root/.nexus/prover "$ENDPOINT_URL"
+/app/prover "$ENDPOINT_URL"
