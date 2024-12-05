@@ -22,7 +22,7 @@ RUN mkdir -p $NEXUS_HOME
 
 WORKDIR /root/.nexus
 
-COPY ./bin/src .
+COPY ./bin/src ./src
 COPY ./bin/prover .
 RUN chmod +x ./prover
 
