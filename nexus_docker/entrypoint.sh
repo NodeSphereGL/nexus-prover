@@ -36,5 +36,26 @@ fi
 
 echo "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
 
-# Run the prover binary with the endpoint URL
-/app/prover "$ENDPOINT_URL"
+# Start the application in the background
+/app/prover "$ENDPOINT_URL" &
+
+# Background process to monitor and conditionally copy prover-id
+(
+    echo "Checking if /wallet/prover-id already exists..."
+    if [ -f "/wallet/prover-id" ]; then
+        echo "/wallet/prover-id already exists. No action needed."
+        exit 0
+    fi
+
+    echo "Waiting for /root/.nexus/prover-id to be created..."
+    while [ ! -f "/root/.nexus/prover-id" ]; do
+        sleep 1  # Check every second
+    done
+
+    echo "Found /root/.nexus/prover-id. Copying to /wallet..."
+    cp /root/.nexus/prover-id /wallet/
+    echo "Copied /root/.nexus/prover-id to /wallet successfully."
+) &
+
+# Wait for all background processes to finish
+wait
