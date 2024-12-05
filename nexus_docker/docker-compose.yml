@@ -1,0 +1,18 @@
+services:
+  nexus001:
+    image: toanbk/nexus-prover:latest
+    volumes:
+      - ${WALLET_DIR}/n001:/root/.nexus
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    environment:
+      - ENDPOINT_URL=${ENDPOINT_URL}
+      - http_proxy=${PROXY_001}
+      - HTTP_PROXY=${PROXY_001}
+      - https_proxy=${PROXY_001}
+      - HTTPS_PROXY=${PROXY_001}
+      - no_proxy=${NO_PROXY}
+      - NO_PROXY=${NO_PROXY}
+    restart: always
