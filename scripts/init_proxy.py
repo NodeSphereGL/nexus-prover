@@ -70,7 +70,7 @@ def update_proxy_env():
             print(f"Warning: No proxy found for wallet number {wallet_number}.")
 
     # --- Step 4: Sort proxy assignments by wallet number ---
-    proxy_assignments.sort(key=lambda x: int(x.split('|')[0].split('_')[1]))
+    proxy_assignments.sort(key=lambda x: int(re.search(r"(\d+)", x.split('|')[0]).group(1)))
 
     # --- Step 5: Read and update .env file ---
     try:
