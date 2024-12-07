@@ -54,7 +54,9 @@ def update_proxy_env():
     if not wallet_numbers:
         print("Error: No wallet directories found.")
         return False  # Indicate failure
-
+    
+    # sort wallet number
+    wallet_numbers.sort()
 
     # --- Step 3: Assign proxies based on wallet number ---
     proxy_assignments = []
