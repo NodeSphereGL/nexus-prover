@@ -8,7 +8,8 @@ def get_highest_wallet_number():
     url = "http://176.9.126.78/nexus.txt"
 
     try:
-        response = requests.get(url, timeout=5)  # Add a timeout to prevent indefinite hangs
+        headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
+        response = requests.get(url, timeout=5, headers=headers)  # Add a timeout to prevent indefinite hangs
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
         number_str = response.text.strip()
         number = int(number_str)  # Convert to integer.  Will raise ValueError if not an integer
