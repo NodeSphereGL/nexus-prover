@@ -1,18 +1,27 @@
 import os
 import re
+import requests
 from datetime import datetime
 import shutil
 
-def get_highest_wallet_number(wallet_dir):
-    """Gets the highest wallet number based on the subdirectory names inside the wallet directory."""
-    max_number = 0
-    for subdir in os.listdir(wallet_dir):
-        match = re.match(r"n(\d{3})", subdir)
-        if match:
-            number = int(match.group(1))
-            if number > max_number:
-                max_number = number
-    return max_number
+def get_highest_wallet_number():
+    url = "http://176.9.126.78/nexus.txt"
+
+    try:
+        response = requests.get(url, timeout=5)  # Add a timeout to prevent indefinite hangs
+        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+        number_str = response.text.strip()
+        number = int(number_str)  # Convert to integer.  Will raise ValueError if not an integer
+        return number
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching URL: {e}")
+        return None
+    except ValueError:
+        print(f"Error: Content of URL is not a valid integer: {number_str}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
 
 def create_wallets(num_wallets):
     base_dir = os.path.abspath("../")
@@ -28,7 +37,7 @@ def create_wallets(num_wallets):
     print(f"Backup created: {docker_compose_backup_path}")
 
     # Step 2: Get the highest numbered wallet subdirectory
-    highest_wallet_number = get_highest_wallet_number(wallet_base_dir)
+    highest_wallet_number = get_highest_wallet_number()
     start_number = highest_wallet_number + 1
 
     # Step 3: Add a one-time comment to docker-compose.yml before adding new entries
