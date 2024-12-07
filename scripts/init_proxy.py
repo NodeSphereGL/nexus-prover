@@ -65,11 +65,13 @@ def update_proxy_env():
         proxy_index = wallet_number - 1
         if 0 <= proxy_index < len(formatted_proxies):
             proxy = formatted_proxies[proxy_index]
-            new_env_lines.append(f"PROXY_{wallet_number}={proxy}\n")
-            proxy_assignments.append(f"PROXY_{wallet_number}|{proxy}")
-            print(f"Added/Updated: PROXY_{wallet_number}={proxy}")
+            formatted_wallet_number = "{:03d}".format(wallet_number) #format to 3 digits with leading zeros
+
+            new_env_lines.append(f"PROXY_{formatted_wallet_number}={proxy}\n")
+            proxy_assignments.append(f"PROXY_{formatted_wallet_number}|{proxy}")
+            print(f"Added/Updated: PROXY_{formatted_wallet_number}={proxy}")
         else:
-            print(f"Warning: No proxy found for wallet number {wallet_number}.")
+            print(f"Warning: No proxy found for wallet number {formatted_wallet_number}.")
 
     # --- Step 4: Sort proxy assignments by wallet number ---
     proxy_assignments.sort(key=lambda x: int(re.search(r"(\d+)", x.split('|')[0]).group(1)))
