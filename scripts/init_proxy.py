@@ -69,8 +69,10 @@ def update_proxy_env():
         else:
             print(f"Warning: No proxy found for wallet number {wallet_number}.")
 
+    # --- Step 4: Sort proxy assignments by wallet number ---
+    proxy_assignments.sort(key=lambda x: int(x.split('|')[0].split('_')[1]))
 
-    # --- Step 4: Read and update .env file ---
+    # --- Step 5: Read and update .env file ---
     try:
         if os.path.exists(env_file_path):
             with open(env_file_path, 'r') as env_file:
@@ -89,7 +91,7 @@ def update_proxy_env():
         return False # Indicate failure
 
 
-    # --- Step 5: Write proxy assignments to proxy.txt ---
+    # --- Step 6: Write proxy assignments to proxy.txt ---
     try:
         os.makedirs(os.path.join(base_dir, "output"), exist_ok=True)
         with open(output_file_path, 'w') as output_file:
@@ -97,9 +99,9 @@ def update_proxy_env():
         print(f"Proxy assignments written to {output_file_path}.")
     except Exception as e:
         print(f"Error: Unable to write to {output_file_path}: {e}")
-        return False # Indicate failure
+        return False  # Indicate failure
 
-    return True # Indicate success
+    return True  # Indicate success
 
 
 if __name__ == "__main__":
