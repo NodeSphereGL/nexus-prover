@@ -51,7 +51,7 @@ use std::fs::File;
 use std::io::Read;
 use zstd::stream::Encoder;
 
-use crate::utils::updater::{AutoUpdaterMode, UpdaterConfig};
+use crate::utils::updater::AutoUpdaterMode;
 
 // The interval at which to send updates to the orchestrator
 const PROOF_PROGRESS_UPDATE_INTERVAL_IN_SECONDS: u64 = 180; // 3 minutes
@@ -107,13 +107,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         args.hostname,
         args.port
     );
-
-    // Initialize the CLI auto-updater that checks for and applies updates to the CLI:
-    // a. Create the updater config
-    let updater_config = UpdaterConfig::new(args.updater_mode, args.hostname);
-
-    // b. runs the CLI's auto updater in a separate thread continuously in intervals
-    updater::spawn_auto_update_thread(&updater_config).expect("Failed to spawn auto-update thread");
 
     let k = 4;
     // TODO(collinjackson): Get parameters from a file or URL.
@@ -172,8 +165,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut rng = rand::thread_rng();
         let input = vec![5, rng.gen::<u8>(), rng.gen::<u8>()];
 
+        let program_name = utils::prover::get_program_for_prover(&prover_id);
+        let program_file_path = &format!("src/generated/{}", program_name);
+
         let mut vm: NexusVM<MerkleTrie> =
-            parse_elf(get_file_as_byte_vec("src/generated/fast-fib").as_ref())
+            parse_elf(get_file_as_byte_vec(program_file_path).as_ref())
                 .expect("error loading and parsing RISC-V instruction");
         vm.syscalls.set_input(&input);
 
@@ -215,6 +211,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "cycles_proven": steps_proven * k,
                 "k": k,
                 "prover_id": prover_id,
+                "program_name": program_name,
             }),
             false,
         );
@@ -236,7 +233,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 steps_in_trace: total_steps as i32,
                 steps_proven: queued_steps_proven,
                 step_to_start: start as i32,
-                program_id: "fast-fib".to_string(),
+                program_id: program_name.clone(),
                 client_id_token: None,
                 proof_duration_millis: queued_proof_duration_millis,
                 k,
@@ -266,6 +263,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     "progress_duration_millis": progress_duration.as_millis(),
                     "proof_cycles_hertz": proof_cycles_hertz,
                     "prover_id": prover_id,
+                    "program_name": program_name,
                 }),
                 false,
             );
@@ -396,6 +394,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &ws_addr_string,
                 json!({
                     "prover_id": &prover_id,
+                    "program_name": utils::prover::get_program_for_prover(&prover_id),
                     "error": e.to_string(),
                 }),
                 true,
@@ -406,7 +405,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "disconnect".into(),
         "Sent proof and closed connection...".into(),
         &ws_addr_string,
-        json!({ "prover_id": prover_id }),
+        json!({
+            "prover_id": prover_id,
+            "program_name": utils::prover::get_program_for_prover(&prover_id),
+        }),
         true,
     );
     Ok(())
