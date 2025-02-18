@@ -71,12 +71,6 @@ def create_wallets(num_wallets):
         hard: 65535
     environment:
       - ENDPOINT_URL=${{ENDPOINT_URL}}
-      - http_proxy=${{PROXY_{i:03d}}}
-      - HTTP_PROXY=${{PROXY_{i:03d}}}
-      - https_proxy=${{PROXY_{i:03d}}}
-      - HTTPS_PROXY=${{PROXY_{i:03d}}}
-      - no_proxy=${{NO_PROXY}}
-      - NO_PROXY=${{NO_PROXY}}
     restart: always
 """
         with open(docker_compose_path, 'a') as docker_compose_file:
