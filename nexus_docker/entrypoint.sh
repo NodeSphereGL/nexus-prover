@@ -22,4 +22,4 @@ fi
 echo "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
 
 # Start the application
-echo "2" | /app/nexus-network start --env beta
+/app/nexus-network start --env beta
