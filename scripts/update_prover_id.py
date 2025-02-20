@@ -2,12 +2,12 @@ import os
 import sys
 
 def update_prover_id(prover_id, wallet_dir):
-    """Creates or updates the prover-id file in each subdirectory of the wallet directory."""
+    """Creates or updates the node-id file in each subdirectory of the wallet directory."""
     try:
         for subdir in os.listdir(wallet_dir):
             subdir_path = os.path.join(wallet_dir, subdir)
             if os.path.isdir(subdir_path):
-                prover_id_path = os.path.join(subdir_path, "prover-id")
+                prover_id_path = os.path.join(subdir_path, "node-id")
                 try:
                     with open(prover_id_path, "w") as f:
                         f.write(prover_id)

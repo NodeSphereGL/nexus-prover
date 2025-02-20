@@ -3,16 +3,16 @@
 
 # Check if /root/.nexus directory exists
 if [ -d "/root/.nexus" ]; then
-    cp /wallet/prover-id /root/.nexus/
+    cp /wallet/node-id /root/.nexus/
 else
     echo "/root/.nexus directory does not exist."
-    # If /root/.nexus does not exist, check for prover-id in /wallet
-    if [ -f "/wallet/prover-id" ]; then
-        echo "Found /wallet/prover-id. Copying to /root/.nexus."
+    # If /root/.nexus does not exist, check for node-id in /wallet
+    if [ -f "/wallet/node-id" ]; then
+        echo "Found /wallet/node-id. Copying to /root/.nexus."
         mkdir -p /root/.nexus
-        cp /wallet/prover-id /root/.nexus/
+        cp /wallet/node-id /root/.nexus/
     else
-        echo "No prover-id found in /wallet or /root/.nexus."
+        echo "No node-id found in /wallet or /root/.nexus."
     fi
 fi
 
@@ -22,4 +22,4 @@ fi
 echo "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
 
 # Start the application
-/app/prover "$ENDPOINT_URL"
+/app/nexus-network start --env beta

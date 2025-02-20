@@ -22,10 +22,10 @@ RUN mkdir -p /wallet
 
 WORKDIR /app
 
-COPY ./bin/src ./src
-COPY ./bin/prover ./
+# COPY ./bin/src ./src
+COPY ./bin/nexus-network ./
 
-RUN chmod +x ./prover
+RUN chmod +x ./nexus-network
 
 # Copy the entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
