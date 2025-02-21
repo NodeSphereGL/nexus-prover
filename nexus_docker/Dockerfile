@@ -22,8 +22,10 @@ RUN mkdir -p /wallet
 
 WORKDIR /app
 
-# COPY ./bin/src ./src
-COPY ./bin/nexus-network ./
+ENV CARGO_MANIFEST_DIR=/app
+
+COPY ./src/bin/nexus-network ./
+COPY ./src/assets ./assets
 
 RUN chmod +x ./nexus-network
 
