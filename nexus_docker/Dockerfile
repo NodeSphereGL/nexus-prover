@@ -22,7 +22,7 @@ RUN mkdir -p /wallet
 
 WORKDIR /app
 
-ENV CARGO_MANIFEST_DIR=/app
+ENV ASSETS_DIR=/app/assets
 
 COPY ./src/bin/nexus-network ./
 COPY ./src/assets ./assets
