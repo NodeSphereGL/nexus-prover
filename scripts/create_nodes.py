@@ -1,28 +1,28 @@
 import os
 import re
-import requests
 from datetime import datetime
 import shutil
 
 def get_highest_wallet_number():
-    url = "http://176.9.126.78/nexus.txt"
+    base_dir = os.path.abspath("../")
+    wallet_base_dir = os.path.join(base_dir, "wallet")
 
-    try:
-        headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
-        response = requests.get(url, timeout=5, headers=headers)  # Add a timeout to prevent indefinite hangs
-        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-        number_str = response.text.strip()
-        number = int(number_str)  # Convert to integer.  Will raise ValueError if not an integer
-        return number
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching URL: {e}")
-        return None
-    except ValueError:
-        print(f"Error: Content of URL is not a valid integer: {number_str}")
-        return None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return None
+    if not os.path.exists(wallet_base_dir):
+        raise FileNotFoundError(f"Wallet directory not found: {wallet_base_dir}")
+
+    # Regex to match folder names like "n001", "n002", ..., "n064"
+    pattern = re.compile(r"n(\d{3})$")
+
+    highest_number = 0
+
+    for folder_name in os.listdir(wallet_base_dir):
+        match = pattern.match(folder_name)
+        if match:
+            wallet_number = int(match.group(1))  # Convert "001" -> 1, "064" -> 64
+            highest_number = max(highest_number, wallet_number)
+
+    return highest_number
+
 
 def create_wallets(num_wallets):
     base_dir = os.path.abspath("../")
