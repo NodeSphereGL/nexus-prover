@@ -1,25 +1,43 @@
 #!/bin/bash
-# Entry point script to run prover with an endpoint URL
+set -e  # Exit immediately if any command fails
+set -u  # Treat unset variables as errors
+set -o pipefail  # Ensure errors in piped commands cause script failure
 
-# Check if /root/.nexus directory exists
-if [ -d "/root/.nexus" ]; then
-    cp /wallet/node-id /root/.nexus/
-else
-    echo "/root/.nexus directory does not exist."
-    # If /root/.nexus does not exist, check for node-id in /wallet
-    if [ -f "/wallet/node-id" ]; then
-        echo "Found /wallet/node-id. Copying to /root/.nexus."
-        mkdir -p /root/.nexus
-        cp /wallet/node-id /root/.nexus/
-    else
-        echo "No node-id found in /wallet or /root/.nexus."
-    fi
+# Log function for better debugging
+log() {
+    echo "[INFO] $1"
+}
+
+error_exit() {
+    echo "[ERROR] $1" >&2
+    exit 1
+}
+
+NODE_ID_PATH="/root/.nexus/node-id"
+WALLET_NODE_ID="/wallet/node-id"
+
+# Ensure /root/.nexus exists
+if [ ! -d "/root/.nexus" ]; then
+    log "Creating /root/.nexus directory..."
+    mkdir -p /root/.nexus || error_exit "Failed to create /root/.nexus"
 fi
 
-# Set default value for ENDPOINT_URL if not provided
-: "${ENDPOINT_URL:=beta.orchestrator.nexus.xyz}"
+# Ensure node-id file exists
+if [ ! -f "$NODE_ID_PATH" ]; then
+    if [ -f "$WALLET_NODE_ID" ]; then
+        log "Copying node-id from /wallet to /root/.nexus..."
+        cp "$WALLET_NODE_ID" "$NODE_ID_PATH" || error_exit "Failed to copy node-id file"
+        chmod 600 "$NODE_ID_PATH" || error_exit "Failed to set permissions on node-id"
+    else
+        error_exit "No node-id found in /wallet or /root/.nexus. Aborting."
+    fi
+else
+    log "node-id file already exists in /root/.nexus"
+fi
 
-echo "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
+# Ensure ENDPOINT_URL has a default value
+: "${ENDPOINT_URL:=beta.orchestrator.nexus.xyz}"
+log "Running prover with ENDPOINT_URL: $ENDPOINT_URL"
 
 # Start the application
-/app/nexus-network start --env beta
+exec /app/nexus-network start --env beta
